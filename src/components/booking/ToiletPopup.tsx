@@ -42,7 +42,7 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
     setError(null);
 
     try {
-      console.log({HHHHHHHHHHHHHHH:"HHHHHHHHHHHHHHHHH"})
+      console.log({ HHHHHHHHHHHHHHH: "HHHHHHHHHHHHHHHHH" });
       const createPayment = httpsCallable(functions, "createPayment");
       const result = await createPayment({
         amount: parseFloat(toilet.price),
@@ -50,11 +50,14 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
         establishmentId: toilet.id,
         establishmentName: toilet.name || "",
         establishmentAddress: toilet.address,
-        userId: user.uid,
-        userEmail: user.email,
-        userName: user.displayName,
+        // userId: user.uid,
+        // userEmail: user.email,
+        // userName: user.displayName,
+        userId: "IKHco0Y1snak5WoKfTdChSwExbH3",
+        userEmail: "hidayat.rehman64@gmail.com",
+        userName: "Hidayat ur Rehman",
       });
-console.log({result})
+      console.log({ result });
       if ("data" in result && result.data && "clientSecret" in result.data) {
         const { clientSecret } = result.data as { clientSecret: string };
         setClientSecret(clientSecret);

@@ -6,7 +6,6 @@ const cors = require("cors")({ origin: ["http://localhost:5173"] });
 admin.initializeApp();
 
 // Create Payment Function
-console.log({ one });
 exports.createPayment = functions.https.onRequest((req, res) => {
   
   cors(req, res, async () => {
