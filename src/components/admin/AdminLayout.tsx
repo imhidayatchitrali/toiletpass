@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Bath, LayoutDashboard, CalendarCheck, Wallet, QrCode, LogOut, Euro, Settings, Home } from 'lucide-react';
 import { AdminDashboard } from './AdminDashboard';

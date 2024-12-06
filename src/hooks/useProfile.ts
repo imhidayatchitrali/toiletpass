@@ -18,12 +18,12 @@ export const useProfile = (user: User | null) => {
   const [profileData, setProfileData] = useState<ProfileData>({
     firstName: '',
     lastName: '',
-    email: user?.email || '',
+    email: user?.email || '',  // Initialize with user email
     phone: '',
     address: '',
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -34,6 +34,7 @@ export const useProfile = (user: User | null) => {
 
       try {
         const cached = profileCache.get(user.uid);
+        // Check if the cache is available and valid
         if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
           setProfileData(cached.data);
           setLoading(false);
@@ -42,13 +43,15 @@ export const useProfile = (user: User | null) => {
 
         const userRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userRef);
-        
+
         if (userDoc.exists()) {
-          const data = {
-            ...profileData,
-            ...userDoc.data(),
-            email: user.email || ''
-          } as ProfileData;
+          const data: ProfileData = {
+            firstName: userDoc.data().firstName || '',
+            lastName: userDoc.data().lastName || '',
+            email: user.email || '',
+            phone: userDoc.data().phone || '',
+            address: userDoc.data().address || '',
+          };
           
           setProfileData(data);
           profileCache.set(user.uid, {
@@ -56,14 +59,13 @@ export const useProfile = (user: User | null) => {
             timestamp: Date.now()
           });
         } else {
-          const newProfile = {
+          // Handle case where profile does not exist, create new profile
+          const newProfile: ProfileData = {
             firstName: '',
             lastName: '',
             email: user.email || '',
             phone: '',
             address: '',
-            userId: user.uid,
-            createdAt: new Date(),
           };
           
           await setDoc(userRef, newProfile);
@@ -82,7 +84,7 @@ export const useProfile = (user: User | null) => {
     };
 
     fetchProfile();
-  }, [user]);
+  }, [user]); // Only re-fetch if the `user` object changes
 
   const updateProfile = async (newData: Partial<ProfileData>) => {
     if (!user) throw new Error('Utilisateur non connecté');
@@ -93,15 +95,14 @@ export const useProfile = (user: User | null) => {
       // Prepare update data with required fields
       const updateData = {
         ...newData,
-        userId: user.uid,
-        updatedAt: new Date(),
-        email: user.email // Ensure email is always present
+        updatedAt: new Date(),  // Timestamp the update
+        email: user.email, // Ensure email is always present
       };
 
-      // Update Firestore
+      // Update Firestore with the new data
       await updateDoc(userRef, updateData);
 
-      // Update local state and cache
+      // Update the local state and cache
       const updatedData = { ...profileData, ...newData };
       setProfileData(updatedData);
       profileCache.set(user.uid, {

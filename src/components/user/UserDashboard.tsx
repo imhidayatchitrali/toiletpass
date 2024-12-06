@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Star, Eye, Plus, Trash2, AlertCircle, Info, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
@@ -6,11 +6,23 @@ import { usePublicToilets } from '../../hooks/usePublicToilets';
 import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
+// Define the type for a toilet
+interface Toilet {
+  id: string;
+  name: string;
+  address: string;
+  description?: string;
+  stats: {
+    views: number;
+    rating: string;
+  };
+}
+
 export const UserDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { canAdd, dailyCount } = usePublicToilets(user?.uid || null);
-  const [toilets, setToilets] = useState([]);
+  const [toilets, setToilets] = useState<Toilet[]>([]); // Correctly typed state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
@@ -38,8 +50,8 @@ export const UserDashboard = () => {
           rating: (Math.random() * 4 + 1).toFixed(1)
         }
       }));
-      
-      setToilets(toiletsData);
+
+      setToilets(toiletsData as Toilet[]); // Cast the data to match the Toilet type
     } catch (err) {
       console.error('Error fetching toilets:', err);
       setError('Impossible de charger vos toilettes');

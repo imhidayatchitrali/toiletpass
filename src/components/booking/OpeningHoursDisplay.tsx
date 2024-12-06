@@ -24,9 +24,15 @@ const DAYS = {
 };
 
 export const OpeningHoursDisplay: React.FC<OpeningHoursDisplayProps> = ({ openingHours }) => {
+  // Helper function to get the current day in the correct format
+  const getCurrentDay = (): string => {
+    const now = new Date();
+    return now.toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase();
+  };
+
   const getCurrentStatus = () => {
     const now = new Date();
-    const currentDay = now.toLocaleDateString('fr-FR', { weekday: 'monday' }).toLowerCase();
+    const currentDay = getCurrentDay(); // Get the current day in the format of 'monday', 'tuesday', etc.
     const currentTime = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
     const todayHours = openingHours[currentDay];
@@ -47,7 +53,7 @@ export const OpeningHoursDisplay: React.FC<OpeningHoursDisplayProps> = ({ openin
       <div className="space-y-2">
         {Object.entries(DAYS).map(([day, label]) => {
           const hours = openingHours[day];
-          const isToday = new Date().toLocaleDateString('fr-FR', { weekday: 'monday' }).toLowerCase() === day;
+          const isToday = getCurrentDay() === day; // Use getCurrentDay() here
 
           return (
             <div key={day} className="flex justify-between items-center">

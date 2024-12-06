@@ -10,7 +10,7 @@ export const UserWallet = () => {
   const { user } = useAuthContext();
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  // const [error, setError] = useState('');
   const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [customAmount, setCustomAmount] = useState('');
@@ -39,7 +39,7 @@ export const UserWallet = () => {
       }
     } catch (err) {
       console.error('Error fetching wallet:', err);
-      setError('Impossible de charger votre cagnotte');
+      // setError('Impossible de charger votre cagnotte');
     } finally {
       setLoading(false);
     }

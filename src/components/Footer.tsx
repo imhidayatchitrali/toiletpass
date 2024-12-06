@@ -1,4 +1,3 @@
-import React from 'react';
 import { Bath, Facebook, Twitter, Instagram, Mail, Phone, MapPin, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import { FilterSection } from './booking/FilterSection';
-import { LocationSearch } from './booking/LocationSearch';
-import { ToiletPopup } from './booking/ToiletPopup';
-import { useToilets } from '../hooks/useToilets';
-import { useFilters } from '../hooks/useFilters';
-import { useAuthContext } from '../contexts/AuthContext';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { FilterSection } from "./booking/FilterSection";
+import { LocationSearch } from "./booking/LocationSearch";
+import { ToiletPopup } from "./booking/ToiletPopup";
+import { useToilets } from "../hooks/useToilets";
+import { useFilters } from "../hooks/useFilters";
+import { useAuthContext } from "../contexts/AuthContext";
+import { collection, query, getDocs } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 // Suppression des anciens icônes par défaut
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 // Icône personnalisée pour la position de l'utilisateur
 const userIcon = L.divIcon({
-  className: 'custom-user-marker',
+  className: "custom-user-marker",
   html: `
     <div style="
       background-color: #3b82f6;
@@ -45,11 +45,11 @@ const userIcon = L.divIcon({
 
 // Fonction pour créer un marqueur de prix personnalisé
 const createPriceMarker = (price: string | number, isFree: boolean = false) => {
-  const displayPrice = isFree ? 'Gratuit' : `${price}€`;
-  const textColor = isFree ? '#16a34a' : '#2563eb';
-  
+  const displayPrice = isFree ? "Gratuit" : `${price}€`;
+  const textColor = isFree ? "#16a34a" : "#2563eb";
+
   return L.divIcon({
-    className: 'custom-price-marker',
+    className: "custom-price-marker",
     html: `
       <div style="
         background-color: white;
@@ -88,14 +88,14 @@ const LocationMarker = () => {
   useEffect(() => {
     map.locate({ watch: true, enableHighAccuracy: true });
 
-    map.on('locationfound', (e) => {
+    map.on("locationfound", (e) => {
       setPosition([e.latlng.lat, e.latlng.lng]);
       map.setView(e.latlng, map.getZoom());
     });
 
     return () => {
       map.stopLocate();
-      map.off('locationfound');
+      map.off("locationfound");
     };
   }, [map]);
 
@@ -111,51 +111,71 @@ const LocationMarker = () => {
   ) : null;
 };
 
+// Définition du type de donnée pour les toilettes
+interface Toilet {
+  id: string;
+  name: string;
+  address: string;
+  position: [number, number];
+  price: string;
+  rating: number;
+  amenities: string[];
+  type: string;
+  features: {
+    wifi: boolean;
+    babyChange: boolean;
+    eco: boolean;
+    coffee: boolean;
+    shower: boolean;
+    security: boolean;
+    petFriendly: boolean;
+  };
+}
+
 export const BookingMap = () => {
-  const navigate = useNavigate();
   const { user } = useAuthContext();
   const { toilets, setToilets } = useToilets();
   const { filters, setFilters } = useFilters();
   const [mapCenter, setMapCenter] = useState<[number, number]>([48.8566, 2.3522]);
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     const fetchEstablishments = async () => {
       try {
-        const establishmentsQuery = query(collection(db, 'establishments'));
+        const establishmentsQuery = query(collection(db, "establishments"));
         const querySnapshot = await getDocs(establishmentsQuery);
-        const establishmentsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          type: 'partner'
-        }));
+        const establishmentsData: Toilet[] = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "Unknown Name",
+            address: data.address || "Unknown Address",
+            position: data.position || [0, 0],
+            price: data.price || "0",
+            rating: data.rating || 0,
+            amenities: data.amenities || [],
+            type: data.type || "public",
+            features: data.features || {},
+          };
+        });
 
-        const validEstablishments = establishmentsData.filter(est => 
-          est.position && 
-          Array.isArray(est.position) && 
-          est.position.length === 2 &&
-          !isNaN(est.position[0]) && 
-          !isNaN(est.position[1])
-        );
+        const validEstablishments = establishmentsData.filter((est) => est.position && Array.isArray(est.position) && est.position.length === 2 && !isNaN(est.position[0]) && !isNaN(est.position[1]));
 
         setToilets(validEstablishments);
       } catch (err) {
-        console.error('Error fetching establishments:', err);
+        console.error("Error fetching establishments:", err);
       }
     };
 
     fetchEstablishments();
 
-    // Demander la géolocalisation au chargement
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setUserLocation([latitude, longitude]);
           setMapCenter([latitude, longitude]);
         },
         (error) => {
-          console.error('Geolocation error:', error);
+          console.error("Geolocation error:", error);
         },
         { enableHighAccuracy: true }
       );
@@ -166,19 +186,13 @@ export const BookingMap = () => {
     setMapCenter(location);
   };
 
-  const filteredToilets = toilets.filter(toilet => {
-    if (!toilet.position || !Array.isArray(toilet.position) || toilet.position.length !== 2) {
-      return false;
-    }
-
-    const isFree = toilet.price === 0 || toilet.type === 'public';
-    const isPaid = !isFree;
-
-    const typeMatch = (isFree && filters.type.free) || (isPaid && filters.type.paid);
+  const filteredToilets = toilets.filter((toilet) => {
+    const isFree = Number(toilet.price) === 0 || toilet.type === "public";
+    const typeMatch = (isFree && filters.type.free) || (!isFree && filters.type.paid);
 
     const featureMatch = Object.entries(filters.features).every(([key, value]) => {
       if (!value) return true;
-      return toilet.features?.[key];
+      return toilet.features?.[key as keyof typeof toilet.features];
     });
 
     return typeMatch && featureMatch;
@@ -189,48 +203,37 @@ export const BookingMap = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Trouvez des toilettes</h2>
-          <p className="text-lg text-gray-600 mb-6">
-            {!user ? 
-              "Connectez-vous pour réserver" :
-              "Sélectionnez des toilettes sur la carte pour réserver"
-            }
-          </p>
+          <p className="text-lg text-gray-600 mb-6">{!user ? "Connectez-vous pour réserver" : "Sélectionnez des toilettes sur la carte pour réserver"}</p>
           <LocationSearch onLocationSelect={handleLocationSelect} />
         </div>
 
         <FilterSection filters={filters} setFilters={setFilters} />
 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <MapContainer
-            center={mapCenter}
-            zoom={15}
-            style={{ height: '600px', width: '100%' }}
-          >
+          <MapContainer center={mapCenter} zoom={15} style={{ height: "600px", width: "100%" }}>
             <MapUpdater center={mapCenter} />
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' />
             <LocationMarker />
             {filteredToilets.map((toilet) => {
-              const isFree = toilet.price === 0 || toilet.type === 'public';
+              const isFree = Number(toilet.price) === 0 || toilet.type === "public";
               const price = isFree ? 0 : toilet.price || 2;
-              
+
               return (
-                <Marker
-                  key={toilet.id}
-                  position={toilet.position as [number, number]}
-                  icon={createPriceMarker(price, isFree)}
-                >
+                <Marker key={toilet.id} position={toilet.position as [number, number]} icon={createPriceMarker(price, isFree)}>
                   <Popup>
-                    <ToiletPopup 
+                    <ToiletPopup
                       toilet={{
-                        ...toilet,
-                        price: isFree ? '0' : `${price}`
+                        id: toilet.id,
+                        name: toilet.name,
+                        address: "Unknown Address", // Ensure address is passed
+                        price: toilet.price,
+                        position: toilet.position,
+                        rating: toilet.rating,
+                        amenities: toilet.amenities,
+                        type: toilet.type,
+                        features: toilet.features,
                       }}
-                      isAuthenticated={!!user}
-                      onBooking={() => navigate('/login')}
-                      onToiletRemoved={(id) => setToilets(prev => prev.filter(t => t.id !== id))}
+                      onLogin={() => console.log("Login needed")}
                     />
                   </Popup>
                 </Marker>

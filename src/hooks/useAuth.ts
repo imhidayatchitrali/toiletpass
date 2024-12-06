@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut,
+  createUserWithEmailAndPassword as signUp, 
+  signInWithEmailAndPassword as signIn,
+  signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,

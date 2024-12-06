@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { Euro, Users, CalendarCheck, TrendingUp, Plus, Building2 } from 'lucide-react';
+import { Euro,  TrendingUp, Plus } from 'lucide-react';
 
 export const Wallet = () => {
-  const [balance, setBalance] = useState(0);
-  const [monthlyRevenue, setMonthlyRevenue] = useState(0);
-  const [lastWithdrawal, setLastWithdrawal] = useState(0);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-
+  // const [balance, setBalance] = useState(0);
+  // const [monthlyRevenue, setMonthlyRevenue] = useState(0);
+  // const [lastWithdrawal, setLastWithdrawal] = useState(0);
+  // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+const balance = 0;
+const monthlyRevenue = 0;
+const lastWithdrawal = 0;
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Cagnotte</h1>
         <button
-          onClick={() => setShowWithdrawModal(true)}
+          // onClick={() => setShowWithdrawModal(true)}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
           disabled={balance <= 0}
         >

@@ -1,18 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Building2, MapPin, Euro, TrendingUp, Trash2, Calendar, AlertCircle, Edit } from 'lucide-react';
 import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { EditEstablishmentModal } from './EditEstablishmentModal';
 
+// Define the Establishment type
+interface Establishment {
+  id: string;
+  establishmentName: string;
+  address: string;
+  createdAt: any; // Firestore timestamp
+  revenue?: {
+    daily: number;
+    monthly: number;
+    total: number;
+  };
+  ownerId: string;
+}
+
 export const EstablishmentsList = () => {
   const { user } = useAuthContext();
-  const [establishments, setEstablishments] = useState([]);
+  const [establishments, setEstablishments] = useState<Establishment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [editingEstablishment, setEditingEstablishment] = useState(null);
+  const [editingEstablishment, setEditingEstablishment] = useState<Establishment | null>(null);
 
   useEffect(() => {
     fetchEstablishments();
@@ -26,13 +40,13 @@ export const EstablishmentsList = () => {
         collection(db, 'establishments'),
         where('ownerId', '==', user.uid)
       );
-      
+
       const querySnapshot = await getDocs(q);
       const establishmentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }));
-      
+      })) as Establishment[];
+
       setEstablishments(establishmentsData);
     } catch (err) {
       console.error('Error fetching establishments:', err);
@@ -66,13 +80,13 @@ export const EstablishmentsList = () => {
     }
   };
 
-  const handleEdit = (establishment) => {
+  const handleEdit = (establishment: Establishment) => {
     setEditingEstablishment(establishment);
   };
 
-  const handleUpdateEstablishment = (updatedEstablishment) => {
-    setEstablishments(prev => 
-      prev.map(est => 
+  const handleUpdateEstablishment = (updatedEstablishment: Establishment) => {
+    setEstablishments(prev =>
+      prev.map(est =>
         est.id === updatedEstablishment.id ? updatedEstablishment : est
       )
     );

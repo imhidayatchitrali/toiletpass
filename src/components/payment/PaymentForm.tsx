@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { stripePromise, STRIPE_OPTIONS } from '../../config/stripe';
-import { StripeService } from '../../services/stripe.service';
-import { StripePaymentForm } from './StripePaymentForm';
-import { AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise, STRIPE_CONFIG as STRIPE_OPTIONS } from "../../config/stripe";
+import { StripeService } from "../../services/stripe.service";
+import { StripePaymentForm } from "./StripePaymentForm";
+import { AlertCircle } from "lucide-react";
 
 interface PaymentFormProps {
   amount: number;
@@ -15,15 +15,7 @@ interface PaymentFormProps {
   onError: (error: string) => void;
 }
 
-export const PaymentForm: React.FC<PaymentFormProps> = ({
-  amount,
-  toiletId,
-  establishmentId,
-  establishmentName,
-  establishmentAddress,
-  onSuccess,
-  onError,
-}) => {
+export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, toiletId, establishmentId, establishmentName, establishmentAddress, onSuccess, onError }) => {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,7 +33,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
         });
         setClientSecret(clientSecret);
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Une erreur est survenue';
+        const message = err instanceof Error ? err.message : "Une erreur est survenue";
         setError(message);
         onError(message);
       } finally {
@@ -72,14 +64,16 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   if (!clientSecret) {
     return null;
   }
-
+  console.log({ STRIPE_OPTIONS });
   return (
-    <Elements stripe={stripePromise} options={{ clientSecret, ...STRIPE_OPTIONS }}>
-      <StripePaymentForm
-        amount={amount}
-        onSuccess={onSuccess}
-        onError={onError}
-      />
+    <Elements
+      stripe={stripePromise}
+      options={{
+        clientSecret,
+        // ...STRIPE_OPTIONS
+      }}
+    >
+      <StripePaymentForm amount={amount} onSuccess={onSuccess} onError={onError} />
     </Elements>
   );
 };

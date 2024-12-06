@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Navigation, Loader, AlertCircle } from 'lucide-react';
 
 interface LocationSearchProps {

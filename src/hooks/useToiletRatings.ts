@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { doc, updateDoc, getDoc, setDoc, arrayUnion, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, setDoc, arrayUnion, } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 interface Rating {

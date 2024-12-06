@@ -12,6 +12,10 @@ interface TopUpModalProps {
   onSuccess: () => void;
 }
 
+interface CreatePaymentIntentResponse {
+  clientSecret: string;
+}
+
 export const TopUpModal = ({ isOpen, onClose, onSuccess }: TopUpModalProps) => {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,8 +40,9 @@ export const TopUpModal = ({ isOpen, onClose, onSuccess }: TopUpModalProps) => {
 
     try {
       const createPaymentIntent = httpsCallable(functions, 'createPaymentIntent');
-      const result = await createPaymentIntent({ amount: parseFloat(amount) });
-      setClientSecret(result.data.clientSecret);
+      // Cast result as unknown first, then cast to the expected type
+      const result = await createPaymentIntent({ amount: parseFloat(amount) }) as unknown as CreatePaymentIntentResponse;
+      setClientSecret(result.clientSecret); // Now the clientSecret is safely accessed
     } catch (err) {
       console.error('Error initializing payment:', err);
       setError('Erreur lors de l\'initialisation du paiement');

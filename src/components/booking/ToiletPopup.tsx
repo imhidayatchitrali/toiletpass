@@ -1,27 +1,31 @@
-import React, { useState } from "react";
-import { Star, LogIn, Wifi, Droplets, AlertCircle, Euro, Baby, Leaf, Coffee, Shield, Dog } from "lucide-react";
+import { useState } from "react";
+import { LogIn, Wifi, AlertCircle, Euro, Baby, Leaf, Coffee, Shield, Dog } from "lucide-react";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../../lib/firebase";
 import { PaymentModal } from "../payment/PaymentModal";
+interface Toilet {
+  id: string;
+  name: string;
+  address: string;
+  position: [number, number];
+  price: string; // Ensure this is string, not number
+  rating: number;
+  amenities: string[];
+  type: string;
+  features?: {
+    wifi?: boolean;
+    babyChange?: boolean;
+    eco?: boolean;
+    coffee?: boolean;
+    shower?: boolean;
+    security?: boolean;
+    petFriendly?: boolean;
+  };
+}
 
 interface ToiletPopupProps {
-  toilet: {
-    id: string;
-    name: string;
-    address: string;
-    type: string;
-    price: string;
-    features?: {
-      wifi?: boolean;
-      babyChange?: boolean;
-      eco?: boolean;
-      coffee?: boolean;
-      shower?: boolean;
-      security?: boolean;
-      petFriendly?: boolean;
-    };
-  };
+  toilet: Toilet;
   onLogin: () => void;
 }
 
@@ -42,32 +46,27 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
     setError(null);
 
     try {
-      console.log({ HHHHHHHHHHHHHHH: "HHHHHHHHHHHHHHHHH" });
       const createPayment = httpsCallable(functions, "createPayment");
-      const result = await createPayment({
+      const result: any = await createPayment({
         amount: parseFloat(toilet.price),
         toiletId: toilet.id,
         establishmentId: toilet.id,
         establishmentName: toilet.name || "",
         establishmentAddress: toilet.address,
-        // userId: user.uid,
-        // userEmail: user.email,
-        // userName: user.displayName,
-        userId: "IKHco0Y1snak5WoKfTdChSwExbH3",
+        userId: "IKHco0Y1snak5WoKfTdChSwExbH3", // Example user data
         userEmail: "hidayat.rehman64@gmail.com",
         userName: "Hidayat ur Rehman",
       });
-      console.log({ result });
+
       if ("data" in result && result.data && "clientSecret" in result.data) {
         const { clientSecret } = result.data as { clientSecret: string };
         setClientSecret(clientSecret);
         setShowPaymentModal(true);
       } else {
-        throw new Error("Réponse invalide du serveur");
+        throw new Error("Invalid server response");
       }
     } catch (err) {
-      console.error("Payment error:", err);
-      setError(err instanceof Error ? err.message : "Une erreur est survenue lors du paiement");
+      setError(err instanceof Error ? err.message : "An error occurred during payment");
     } finally {
       setLoading(false);
     }
@@ -93,35 +92,30 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
                 <span className="text-sm">Wi-Fi</span>
               </div>
             )}
-
             {toilet.features?.babyChange && (
               <div className="flex items-center text-gray-600">
                 <Baby className="h-4 w-4 mr-1" />
                 <span className="text-sm">Table à langer</span>
               </div>
             )}
-
             {toilet.features?.eco && (
               <div className="flex items-center text-gray-600">
                 <Leaf className="h-4 w-4 mr-1" />
                 <span className="text-sm">Écologique</span>
               </div>
             )}
-
             {toilet.features?.coffee && (
               <div className="flex items-center text-gray-600">
                 <Coffee className="h-4 w-4 mr-1" />
                 <span className="text-sm">Café</span>
               </div>
             )}
-
             {toilet.features?.security && (
               <div className="flex items-center text-gray-600">
                 <Shield className="h-4 w-4 mr-1" />
                 <span className="text-sm">Sécurisé</span>
               </div>
             )}
-
             {toilet.features?.petFriendly && (
               <div className="flex items-center text-gray-600">
                 <Dog className="h-4 w-4 mr-1" />

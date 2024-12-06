@@ -1,17 +1,29 @@
 import React from 'react';
-import { Search, Filter, Check, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuthContext } from '../../contexts/AuthContext';
+
+// Define the Reservation interface
+interface Reservation {
+  id: string;
+  userName: string;
+  userEmail: string;
+  timestamp: any; // Firestore timestamp
+  status: 'pending' | 'validated' | 'completed' | 'cancelled';
+  amount: number;
+  qrCode: string; // Assuming qrCode is a string
+  establishmentId: string;
+}
 
 export const Reservations = () => {
   const { user } = useAuthContext();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedStatus, setSelectedStatus] = React.useState('all');
   const [showQRCode, setShowQRCode] = React.useState(false);
-  const [selectedReservation, setSelectedReservation] = React.useState(null);
-  const [reservations, setReservations] = React.useState([]);
+  const [selectedReservation, setSelectedReservation] = React.useState<Reservation | null>(null);
+  const [reservations, setReservations] = React.useState<Reservation[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -23,13 +35,13 @@ export const Reservations = () => {
           collection(db, 'reservations'),
           where('establishmentId', '==', user.uid)
         );
-        
+
         const querySnapshot = await getDocs(q);
         const reservationsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
-        }));
-        
+          ...doc.data(),
+        })) as Reservation[];
+
         setReservations(reservationsData);
       } catch (err) {
         console.error('Error fetching reservations:', err);
@@ -41,7 +53,7 @@ export const Reservations = () => {
     fetchReservations();
   }, [user]);
 
-  const handleShowQRCode = (reservation: any) => {
+  const handleShowQRCode = (reservation: Reservation) => {
     setSelectedReservation(reservation);
     setShowQRCode(true);
   };
@@ -134,11 +146,17 @@ export const Reservations = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      reservation.status === 'validated' ? 'bg-green-100 text-green-800' :
-                      reservation.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        reservation.status === 'validated'
+                          ? 'bg-green-100 text-green-800'
+                          : reservation.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : reservation.status === 'completed'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {reservation.status}
                     </span>
                   </td>

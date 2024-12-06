@@ -1,7 +1,6 @@
-import React from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { X, AlertCircle } from 'lucide-react';
+import { X } from 'lucide-react';
 import { StripePaymentForm } from './StripePaymentForm';
 
 const stripePromise = loadStripe('pk_test_51QJyZwRsucNItIWPHzrCljdjgcMapcKG1bOHALri2mc5l11ziVjMGtEZmnWupmkbZbXQNRd6A5Qnym40ThbnQfKm00U4ZWRWaz');

@@ -32,7 +32,7 @@ export const useEstablishmentVerification = () => {
 
     try {
       const verifyPhoneCode = httpsCallable(functions, 'verifyPhoneCode');
-      const result = await verifyPhoneCode({ phone, code });
+      const result:any = await verifyPhoneCode({ phone, code });
       
       if (result.data.verified) {
         // Créer ou mettre à jour le document de vérification

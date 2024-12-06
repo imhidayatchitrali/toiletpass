@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Calendar, MapPin, Euro, AlertCircle, Search, QrCode } from 'lucide-react';
+import { Home, Calendar, MapPin, Euro, AlertCircle, Search, QrCode, X } from 'lucide-react';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuthContext } from '../../contexts/AuthContext';
