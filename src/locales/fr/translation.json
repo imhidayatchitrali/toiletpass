@@ -1,0 +1,44 @@
+{
+  "common": {
+    "back": "Retour",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe"
+  },
+  "booking": {
+    "title": "Réserver",
+    "findToilets": "Trouver des toilettes",
+    "enterAddress": "Entrez une adresse...",
+    "locate": "Me localiser",
+    "filters": "Filtres",
+    "type": {
+      "free": "Gratuites",
+      "paid": "Payantes"
+    },
+    "features": {
+      "babyChange": "Table à langer",
+      "wifi": "Wi-Fi",
+      "eco": "Écologique",
+      "security": "Sécurisé",
+      "petFriendly": "Animaux acceptés",
+      "shower": "Douche"
+    }
+  },
+  "wallet": {
+    "title": "Ma Cagnotte",
+    "balance": "Solde disponible",
+    "topup": "Recharger",
+    "history": "Historique",
+    "amount": "Montant",
+    "minAmount": "Montant minimum : 5€",
+    "maxAmount": "Montant maximum : 100€"
+  }
+}

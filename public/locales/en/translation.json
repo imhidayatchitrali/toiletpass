@@ -1,0 +1,44 @@
+{
+  "common": {
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "An error occurred"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password"
+  },
+  "booking": {
+    "title": "Book",
+    "findToilets": "Find toilets",
+    "enterAddress": "Enter an address...",
+    "locate": "Locate me",
+    "filters": "Filters",
+    "type": {
+      "free": "Free",
+      "paid": "Paid"
+    },
+    "features": {
+      "babyChange": "Baby changing",
+      "wifi": "Wi-Fi",
+      "eco": "Eco-friendly",
+      "security": "Secure",
+      "petFriendly": "Pet friendly",
+      "shower": "Shower"
+    }
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "balance": "Available balance",
+    "topup": "Top up",
+    "history": "History",
+    "amount": "Amount",
+    "minAmount": "Minimum amount: €5",
+    "maxAmount": "Maximum amount: €100"
+  }
+}
