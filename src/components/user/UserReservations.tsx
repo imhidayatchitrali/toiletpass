@@ -56,7 +56,8 @@ export const UserReservations = () => {
       setReservations(reservationsData);
     } catch (err) {
       console.error('Error fetching reservations:', err);
-      setError('Impossible de charger vos réservations');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while loading your reservations. Please try again later.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

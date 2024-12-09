@@ -28,6 +28,7 @@ export const Reservations = () => {
 
   React.useEffect(() => {
     const fetchReservations = async () => {
+      console.log("in reservation")
       if (!user) return;
 
       try {

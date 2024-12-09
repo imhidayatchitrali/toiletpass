@@ -11,9 +11,6 @@
   },
   "functions": {
     "source": "functions",
-    "predeploy": [],
-    "runtime": "nodejs20",
-    "host": "localhost",
-    "port": 5001
+    "runtime": "nodejs20"
   }
 }

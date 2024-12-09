@@ -25,12 +25,8 @@ export const StripePaymentForm = ({ amount, onSuccess, onError }: StripePaymentF
     setError(null);
 
     try {
-      const { error: submitError } = await elements.submit();
-      if (submitError) {
-        throw new Error(submitError.message);
-      }
-
-      const { paymentIntent, error: confirmError } = await stripe.confirmPayment({
+      // Confirm the payment
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/reservations?success=true`,
@@ -42,11 +38,15 @@ export const StripePaymentForm = ({ amount, onSuccess, onError }: StripePaymentF
         throw new Error(confirmError.message);
       }
 
+      // If the payment was successful
       if (paymentIntent && paymentIntent.status === 'succeeded') {
         onSuccess();
+      } else {
+        // Handle payment not successful (e.g., requires further action)
+        throw new Error('Payment was not successful');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
       onError(errorMessage);
     } finally {
@@ -75,7 +75,7 @@ export const StripePaymentForm = ({ amount, onSuccess, onError }: StripePaymentF
         ) : (
           <>
             <CreditCard className="h-5 w-5 mr-2" />
-            Payer {amount}€
+            Pay {amount}€
           </>
         )}
       </button>

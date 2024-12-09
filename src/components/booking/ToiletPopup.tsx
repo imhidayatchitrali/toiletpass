@@ -31,6 +31,7 @@ interface ToiletPopupProps {
 
 export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
   const { user } = useAuthContext();
+  console.log({ user });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -66,12 +67,13 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
         throw new Error("Invalid server response");
       }
     } catch (err) {
+      console.log({ err });
       setError(err instanceof Error ? err.message : "An error occurred during payment");
     } finally {
       setLoading(false);
     }
   };
-
+  console.log({ toilet });
   return (
     <>
       <div className="p-4 max-w-sm">
@@ -95,7 +97,7 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
             {toilet.features?.babyChange && (
               <div className="flex items-center text-gray-600">
                 <Baby className="h-4 w-4 mr-1" />
-                <span className="text-sm">Table à langer</span>
+                <span className="text-sm">Table à langer as</span>
               </div>
             )}
             {toilet.features?.eco && (
