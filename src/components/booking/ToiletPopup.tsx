@@ -54,9 +54,9 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
         establishmentId: toilet.id,
         establishmentName: toilet.name || "",
         establishmentAddress: toilet.address,
-        userId: "IKHco0Y1snak5WoKfTdChSwExbH3", // Example user data
-        userEmail: "hidayat.rehman64@gmail.com",
-        userName: "Hidayat ur Rehman",
+        userId: user?.displayName, // Example user data
+        userEmail: user?.email,
+        userName: user?.displayName,
       });
 
       if ("data" in result && result.data && "clientSecret" in result.data) {
