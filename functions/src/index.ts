@@ -1,7 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { createPaymentIntent } from './services/payment.service';
-const cors = require('cors')({ origin: ['http://localhost:5173'] });
+// const cors = require('cors')({ origin: ['http://localhost:5173'] });
+const cors = require('cors')({ origin: true });
+
 
 admin.initializeApp();
 
