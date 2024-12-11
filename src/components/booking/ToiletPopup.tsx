@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { LogIn, Wifi, AlertCircle, Euro, Baby, Leaf, Coffee, Shield, Dog } from "lucide-react";
 import { useAuthContext } from "../../contexts/AuthContext";
+import { useProfile } from "../../hooks/useProfile";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../../lib/firebase";
 import { PaymentModal } from "../payment/PaymentModal";
@@ -31,7 +32,8 @@ interface ToiletPopupProps {
 
 export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
   const { user } = useAuthContext();
-  console.log({ user });
+  const { profileData } = useProfile(user);
+  console.log({ user, profileData });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -47,6 +49,7 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
     setError(null);
 
     try {
+      console.log({ user, profileData });
       const createPayment = httpsCallable(functions, "createPayment");
       const result: any = await createPayment({
         amount: parseFloat(toilet.price),
@@ -54,9 +57,10 @@ export const ToiletPopup = ({ toilet, onLogin }: ToiletPopupProps) => {
         establishmentId: toilet.id,
         establishmentName: toilet.name || "",
         establishmentAddress: toilet.address,
-        userId: user?.displayName, // Example user data
+        userId: user?.uid, // Example user data
         userEmail: user?.email,
-        userName: user?.displayName,
+        userName: profileData?.firstName + " " + profileData?.lastName,
+        // userName: user?.displayName ? user?.displayName : user?.email,
       });
 
       if ("data" in result && result.data && "clientSecret" in result.data) {
